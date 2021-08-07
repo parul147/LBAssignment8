@@ -1,0 +1,12 @@
+{
+  "ids": {
+    "Product": 4
+  },
+  "models": {
+    "Product": {
+      "1": "{\"id\":\"1\",\"title\":\"milk\",\"qty\":\"2\",\"price\":\"100\"}",
+      "2": "{\"id\":\"2\",\"title\":\"chocolate\",\"qty\":\"2\",\"price\":\"200\"}",
+      "3": "{\"id\":\"3\",\"title\":\"orange juice\",\"qty\":\"3\",\"price\":\"300\"}"
+    }
+  }
+}
