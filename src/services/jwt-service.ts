@@ -1,9 +1,9 @@
 
-import { UserProfile } from '@loopback/security';
-import { promisify } from 'util';
-import { HttpErrors } from '@loopback/rest';
-import { inject } from '@loopback/core';
-import { TokenServiceBindings } from '../keys';
+import {inject} from '@loopback/core';
+import {HttpErrors} from '@loopback/rest';
+import {UserProfile} from '@loopback/security';
+import {promisify} from 'util';
+import {TokenServiceBindings} from '../keys';
 const jwt = require('jsonwebtoken');
 const signAsync = promisify(jwt.sign);
 const verifyAsync = promisify(jwt.verify);
@@ -19,9 +19,16 @@ export class JWTService {
         if (!userprofile) {
             throw new HttpErrors.Unauthorized('Error while generating token: userprofile is null');
         }
+        const userInfoForToken = {
+            id: userprofile.id,
+            name: userprofile.name,
+            email: userprofile.email,
+            permissions: userprofile.permission
+        };
         let token = '';
+        console.log('userprofilr', userprofile.permission);
         try {
-            token = await signAsync(userprofile, this.jwtSecret, {
+            token = await signAsync(userInfoForToken, this.jwtSecret, {
                 expiresIn: this.jwtExpiresIn
             })
         }
@@ -44,12 +51,13 @@ export class JWTService {
             //dont copy ist,exp,email
             userProfile = Object.assign(
                 {
-                    id: '', name: ''
+                    id: '', name: '', permissions: ''
                 },
                 {
-                    id: decryptedToken.id, name: decryptedToken.name
+                    id: decryptedToken.id, name: decryptedToken.name, permissions: decryptedToken.permissions
                 }
             );
+            console.log('userprofilepermis', decryptedToken.permissions)
         } catch (error) {
             throw new HttpErrors.Unauthorized(
                 `Error Verifying Token :${error.message}`

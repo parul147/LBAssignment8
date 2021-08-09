@@ -1,7 +1,9 @@
-import {inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {inject, Getter} from '@loopback/core';
+import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
 import {PostgresDataSource} from '../datasources';
-import {User, UserRelations} from '../models';
+import {User, UserRelations, Customer, Role} from '../models';
+import {CustomerRepository} from './customer.repository';
+import {RoleRepository} from './role.repository';
 
 export type Credentials = {
   email?:any;
@@ -13,9 +15,19 @@ export class UserRepository extends DefaultCrudRepository<
   typeof User.prototype.id,
   UserRelations
 > {
+
+  public readonly customer: BelongsToAccessor<Customer, typeof User.prototype.id>;
+
+  public readonly role: BelongsToAccessor<Role, typeof User.prototype.id>;
+
   constructor(
-    @inject('datasources.postgres') dataSource: PostgresDataSource,
+    @inject('datasources.postgres') dataSource: PostgresDataSource, @repository.getter('CustomerRepository') protected customerRepositoryGetter: Getter<CustomerRepository>, @repository.getter('RoleRepository') protected roleRepositoryGetter: Getter<RoleRepository>,
   ) {
     super(User, dataSource);
+    this.role = this.createBelongsToAccessorFor('role', roleRepositoryGetter,);
+    this.registerInclusionResolver('role', this.role.inclusionResolver);
+    this.customer = this.createBelongsToAccessorFor('customer', customerRepositoryGetter,);
+    this.registerInclusionResolver('customer', this.customer.inclusionResolver);
+   
   }
 }

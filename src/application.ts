@@ -1,23 +1,22 @@
+import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
+import {AuthorizationComponent, AuthorizationDecision, AuthorizationOptions, AuthorizationTags} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
-import {
-  RestExplorerBindings,
-  RestExplorerComponent,
-} from '@loopback/rest-explorer';
+import {Application, ApplicationConfig} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
 import {RestApplication} from '@loopback/rest';
+import {
+  RestExplorerBindings,
+  RestExplorerComponent
+} from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
+import {JWTStrategy} from './authenticationStrategy/jwt-strategy';
+import {PasswordHasherBinding, TokenServiceBindings, TokenServiceConstants, UserServiceBindings} from './keys';
 import {MySequence} from './sequence';
-import { runInThisContext } from 'vm';
-import { BcryptHasher } from './services/hasher.password.bcrypt';
-import { MyuserService } from './services/user-service';
+
+import {BcryptHasher} from './services/hasher.password.bcrypt';
 import {JWTService} from './services/jwt-service';
-import {PasswordHasherBinding, TokenServiceConstants, UserServiceBindings} from './keys';
-import {TokenServiceBindings} from './keys';
-import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
-import { JWTStrategy } from './authenticationStrategy/jwt-strategy';
-import {AuthorizationComponent} from '@loopback/authorization';
+import {MyuserService} from './services/user-service';
 export {ApplicationConfig};
 
 export class AppApplication extends BootMixin(
@@ -25,7 +24,7 @@ export class AppApplication extends BootMixin(
 ) {
   constructor(options: ApplicationConfig = {}) {
     super(options);
-    //set up binding 
+    //set up binding
     this.setupBinding();
 
     //register authentication component
@@ -46,6 +45,7 @@ export class AppApplication extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+    
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
@@ -58,12 +58,13 @@ export class AppApplication extends BootMixin(
       },
     };
   }
-   setupBinding():void {
+  setupBinding(): void {
     this.bind(PasswordHasherBinding.PASSWORD_HASHER).toClass(BcryptHasher);
     this.bind(PasswordHasherBinding.ROUNDS).to(10);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyuserService);
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(TokenServiceConstants.TOKEN_SECRET_VALUE);
     this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE);
+
   }
 }

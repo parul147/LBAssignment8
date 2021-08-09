@@ -1,37 +1,33 @@
-import { authenticate } from '@loopback/authentication';
+import {authenticate} from '@loopback/authentication';
+import {authorize} from '@loopback/authorization';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { permissionKeys } from '../authorization/permission-keys';
+import {permissionKeys} from '../authorization/permission-keys';
 import {Job} from '../models';
 import {JobRepository} from '../repositories';
-import {authorize} from '@loopback/authorization';
 import {
-  basicAuthorization} from '../services/basic.authorizor';
+  basicAuthorization,
+  
+} from '../services/basic.authorizor';
 export class JobController {
   constructor(
     @repository(JobRepository)
-    public jobRepository : JobRepository,
-  ) {}
-//only admin can access this 
-//admin should be authenticated
-//interceptor- run x and y function before the below function
+    public jobRepository: JobRepository,
+  ) { }
+  //only admin can access this
+  //admin should be authenticated
+  //interceptor- run x and y function before the below function
   @post('/jobs')
   @response(200, {
     description: 'Job model instance',
@@ -40,7 +36,8 @@ export class JobController {
   @authenticate('jwt')
   @authorize({
     allowedRoles: [permissionKeys.CreateJob],
-    voters: [basicAuthorization],
+    voters:[basicAuthorization]
+   
   })
   async create(
     @requestBody({
@@ -48,7 +45,7 @@ export class JobController {
         'application/json': {
           schema: getModelSchemaRef(Job, {
             title: 'NewJob',
-            
+
           }),
         },
       },
@@ -86,8 +83,8 @@ export class JobController {
   ): Promise<Job[]> {
     return this.jobRepository.find(filter);
   }
-//only admin can access this 
-//admin should be authenticated
+  //only admin can access this
+  //admin should be authenticated
   @patch('/jobs')
   @response(200, {
     description: 'Job PATCH success count',
@@ -123,8 +120,8 @@ export class JobController {
     return this.jobRepository.findById(id, filter);
   }
 
-//only admin can access this 
-//admin should be authenticated
+  //only admin can access this
+  //admin should be authenticated
 
   @patch('/jobs/{id}')
   @response(204, {
@@ -144,8 +141,8 @@ export class JobController {
     await this.jobRepository.updateById(id, job);
   }
 
-  //only admin can access this 
-//admin should be authenticated
+  //only admin can access this
+  //admin should be authenticated
   @put('/jobs/{id}')
   @response(204, {
     description: 'Job PUT success',
@@ -158,12 +155,13 @@ export class JobController {
   }
 
 
-  //only admin can access this 
-//admin should be authenticated
-@authenticate('jwt', permissionKeys.DeleteJob)
+  //only admin can access this
+  //admin should be authenticated
+  @authenticate('jwt')
   @authorize({
     allowedRoles: [permissionKeys.DeleteJob],
-    voters: [basicAuthorization],
+    voters:[basicAuthorization]
+   
   })
   @del('/jobs/{id}')
   @response(204, {
