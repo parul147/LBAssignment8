@@ -1,7 +1,8 @@
 import {Entity, model, property} from '@loopback/repository';
+import { SoftDeleteEntity } from './soft-delete-entity';
 
 @model()
-export class Job extends Entity {
+export class Job extends SoftDeleteEntity {
   @property({
     type: 'string',
     id: true,

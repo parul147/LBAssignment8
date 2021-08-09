@@ -4,13 +4,14 @@ import {PostgresDataSource} from '../datasources';
 import {User, UserRelations, Customer, Role} from '../models';
 import {CustomerRepository} from './customer.repository';
 import {RoleRepository} from './role.repository';
+import { SoftCrudRepository } from './soft-crud.repository.base';
 
 export type Credentials = {
   email?:any;
   password?: any;
 }
 
-export class UserRepository extends DefaultCrudRepository<
+export class UserRepository extends SoftCrudRepository<
   User,
   typeof User.prototype.id,
   UserRelations

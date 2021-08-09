@@ -1,7 +1,8 @@
 import {Entity, model, property} from '@loopback/repository';
 import {RoleType} from '../role.enum';
+import { SoftDeleteEntity } from './soft-delete-entity';
 @model()
-export class Role extends Entity {
+export class Role extends SoftDeleteEntity{
   @property({
     type: 'string',
     id: true,

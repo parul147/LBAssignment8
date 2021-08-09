@@ -1,9 +1,10 @@
 import {Entity, model, property, belongsTo} from '@loopback/repository';
+import { SoftDeleteEntity } from './soft-delete-entity';
 import {Customer} from './customer.model';
 import {Role} from './role.model';
 
 @model()
-export class User extends Entity {
+export class User extends SoftDeleteEntity {
   @property({
     type: 'string',
     id: true,
